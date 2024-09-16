@@ -11,6 +11,7 @@ import Users from "./pages/Users";
 import AppLayout from "./ui/AppLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Toaster } from "react-hot-toast";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -39,6 +40,23 @@ function App() {
           <Route path="*" element=<PageNotFound /> />
         </Routes>
       </BrowserRouter>
+      <Toaster
+        position="top-center"
+        gutter={10}
+        toastOptions={{
+          duration: 5000,
+          style: { background: "--color-grey-0", color: "--color-grey-700" },
+          success: {
+            duration: 3000,
+          },
+          error: {
+            theme: {
+              primary: "red",
+              secondary: "black",
+            },
+          },
+        }}
+      />
     </QueryClientProvider>
   );
 }
