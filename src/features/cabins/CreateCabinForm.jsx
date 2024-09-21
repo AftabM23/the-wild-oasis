@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable no-unused-vars */
 import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
@@ -9,26 +11,25 @@ import { createCabin } from "../../services/apiCabin";
 import toast from "react-hot-toast";
 import FormRow from "../../ui/FormRow";
 
-function CreateCabinForm() {
-  const { register, handleSubmit, reset, formState, getValues } = useForm();
+function CreateCabinForm({ cabinData = {}, editSession }) {
+  const { register, handleSubmit, reset, formState, getValues } = useForm({
+    defaultValues: cabinData,
+  });
   const { errors } = formState;
   const queryClient = useQueryClient();
 
-  const { mutate, isLoading } = useMutation({
+  const { isLoading, mutate: creatingCabin } = useMutation({
     mutationFn: createCabin,
     onSuccess: () => {
       queryClient.invalidateQueries(["cabins"]);
-      toast.success("cabin created successfully");
-      reset();
+      toast.success("Cabin created successfully");
     },
     onError: () => {
-      toast.error("cabin creation failed");
+      toast.error("Cabin creation failed");
     },
   });
-
   const handleOnSubmit = (data) => {
-    mutate({ ...data, image: data.image[0] });
-    console.log(data);
+    creatingCabin({ ...data, image: data?.image[0] });
   };
   return (
     <Form onSubmit={handleSubmit(handleOnSubmit)}>
@@ -95,6 +96,7 @@ function CreateCabinForm() {
         <Button variation="secondary" type="reset">
           Cancel
         </Button>
+
         <Button variation="primary" disabled={isLoading}>
           {isLoading ? "Creating Cabin" : "Create Cabin"}
         </Button>
