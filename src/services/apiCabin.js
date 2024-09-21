@@ -1,36 +1,53 @@
 import supabase from "./supabase";
 
+//displaying the cabins
 export async function getCabins() {
   let { data, error } = await supabase.from("cabins").select("*");
+
   if (error) {
     console.error(error);
     throw new Error("couldn't fetch cabins");
   }
+
   return data;
 }
 
-export async function createCabin(newCabin) {
-  console.log(newCabin);
-  console.log(newCabin.image);
+//creating and editing the cabins
+export async function createEditCabin(newCabin, id) {
+  console.log(newCabin, id);
   const bucketUrl =
     "https://bjstfgvivrrufoflsrrj.supabase.co/storage/v1/object/public/cabins/";
-  const imageName = `${Math.random()}-${newCabin?.image.name}`.replaceAll(
-    "/",
-    ""
-  );
+
+  const hasImagePath =
+    typeof newCabin?.image === "string" && newCabin.image.startsWith(bucketUrl);
+
+  const imageName =
+    !hasImagePath &&
+    `${Math.random()}-${newCabin?.image.name}`.replaceAll("/", "");
   console.log(imageName);
-  const imagePath = `${bucketUrl}${imageName}`;
+  const imagePath = hasImagePath ? newCabin.image : `${bucketUrl}${imageName}`;
   console.log(imagePath);
   //inserting data
-  const { data, error } = await supabase
-    .from("cabins")
-    .insert([{ ...newCabin, image: imagePath }])
-    .select();
-  if (error) {
-    console.log(error);
-    throw new Error("failed while creating  cabin");
+  let query = supabase.from("cabins");
+
+  //updating the cabins
+  if (!id) {
+    query = query.insert([{ ...newCabin, image: imagePath }]);
   }
+  if (id) {
+    query = query.update({ ...newCabin, image: imagePath }).eq("id", id);
+  }
+
+  const { data, error } = await query.select().single();
   //uploading images to the supabase bucket
+  if (error) {
+    console.log("Supabase error:", error);
+    throw new Error(
+      id ? "Failed to update the cabin" : "Failed to create the cabin"
+    );
+  }
+  if (hasImagePath) return data;
+
   const { error: storageError } = await supabase.storage
     .from("cabins")
     .upload(imageName, newCabin.image);
@@ -46,6 +63,7 @@ export async function createCabin(newCabin) {
   return data;
 }
 
+//deleting the cabins
 export async function deleteCabin(cabinId) {
   const { data, error } = await supabase
     .from("cabins")

@@ -7,11 +7,11 @@ import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createCabin } from "../../services/apiCabin";
+import { createEditCabin } from "../../services/apiCabin";
 import toast from "react-hot-toast";
 import FormRow from "../../ui/FormRow";
 
-function CreateCabinForm({ cabinData = {}, editSession }) {
+function CreateEditCabinForm({ cabinData = {}, editSession = false }) {
   const { register, handleSubmit, reset, formState, getValues } = useForm({
     defaultValues: cabinData,
   });
@@ -19,17 +19,38 @@ function CreateCabinForm({ cabinData = {}, editSession }) {
   const queryClient = useQueryClient();
 
   const { isLoading, mutate: creatingCabin } = useMutation({
-    mutationFn: createCabin,
+    mutationFn: createEditCabin,
     onSuccess: () => {
       queryClient.invalidateQueries(["cabins"]);
       toast.success("Cabin created successfully");
+      reset();
     },
     onError: () => {
       toast.error("Cabin creation failed");
     },
   });
+
+  const { isLoading: isUpdating, mutate: updatingCabin } = useMutation({
+    mutationFn: ({ data, id }) => createEditCabin(data, id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["cabins"]);
+      toast.success("Cabin Updated successfully");
+    },
+    onError: () => {
+      toast.error("Cabin Update failed");
+    },
+  });
+
   const handleOnSubmit = (data) => {
-    creatingCabin({ ...data, image: data?.image[0] });
+    const imageIs =
+      typeof data.image === "string" ? data.image : data?.image[0];
+    if (editSession) {
+      updatingCabin({ data: { ...data, image: imageIs }, id: data.id });
+
+      console.log(data);
+    } else {
+      creatingCabin({ ...data, image: imageIs });
+    }
   };
   return (
     <Form onSubmit={handleSubmit(handleOnSubmit)}>
@@ -69,7 +90,7 @@ function CreateCabinForm({ cabinData = {}, editSession }) {
           defaultValue={0}
           {...register("discount", {
             validate: (discount) =>
-              discount <= getValues().regularPrice ||
+              discount < getValues().regularPrice ||
               "discount must be less than regular price",
           })}
         />
@@ -105,4 +126,4 @@ function CreateCabinForm({ cabinData = {}, editSession }) {
   );
 }
 
-export default CreateCabinForm;
+export default CreateEditCabinForm;

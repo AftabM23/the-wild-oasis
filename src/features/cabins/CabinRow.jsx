@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteCabin } from "../../services/apiCabin";
 import toast from "react-hot-toast";
 import { useState } from "react";
-import CreateCabinForm from "./CreateCabinForm";
+import CreateEditCabinForm from "./CreateCabinForm";
 
 const TableRow = styled.div`
   display: grid;
@@ -85,7 +85,7 @@ function CabinRow({ cabin }) {
         </BtnsContainer>
       </TableRow>
       {editSession && (
-        <CreateCabinForm cabinData={cabin} editSession={editSession} />
+        <CreateEditCabinForm cabinData={cabin} editSession={editSession} />
       )}
     </>
   );
