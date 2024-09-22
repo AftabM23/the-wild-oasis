@@ -5,6 +5,9 @@ import { formatCurrency } from "../../utils/helpers";
 import { useState } from "react";
 import CreateEditCabinForm from "./CreateCabinForm";
 import useDeleteCabin from "./useDeleteCabin";
+import { HiPencil, HiTrash } from "react-icons/hi";
+import { HiSquare2Stack } from "react-icons/hi2";
+import useCreateCabins from "./useCreateCabins";
 
 const TableRow = styled.div`
   display: grid;
@@ -45,32 +48,45 @@ const Discount = styled.div`
   font-weight: 700;
   color: var(--color-green-700);
 `;
-const BtnsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
+
 function CabinRow({ cabin }) {
   const [editSession, setEditSession] = useState(false);
   const { deleteCabin, isDleteting } = useDeleteCabin();
+  const { creatingCabin, createCabin } = useCreateCabins();
+
+  const { id, name, maxCapacity, description, regularPrice, discount, image } =
+    cabin;
+  const handleDuplicatecabin = () => {
+    createCabin({
+      name: `copy of ${name}`,
+      maxCapacity,
+      description,
+      regularPrice,
+      discount,
+      image,
+    });
+  };
   return (
     <>
       <TableRow>
-        <Img src={cabin.image}></Img>
-        <Cabin>{cabin.name}</Cabin>
-        <div>Fits upto {cabin.maxCapacity} Guests</div>
-        <Price>{formatCurrency(cabin.regularPrice)}</Price>
-        <Discount>{formatCurrency(cabin.discount)}</Discount>
-        <BtnsContainer>
-          {" "}
+        <Img src={image}></Img>
+        <Cabin>{name}</Cabin>
+        <div>Fits upto {maxCapacity} Guests</div>
+        <Price>{formatCurrency(regularPrice)}</Price>
+        <Discount>{formatCurrency(discount)}</Discount>
+        <TableRow>
           <button onClick={() => setEditSession(!editSession)}>
-            Edit Cabin
+            <HiPencil />
           </button>
-          <button onClick={() => deleteCabin(cabin.id)} disabled={isDleteting}>
-            {isDleteting ? "Deleting" : "Delete"}
+          <button onClick={() => deleteCabin(id)} disabled={isDleteting}>
+            <HiTrash />
           </button>
-        </BtnsContainer>
+          <button disabled={creatingCabin} onClick={handleDuplicatecabin}>
+            <HiSquare2Stack />
+          </button>
+        </TableRow>
       </TableRow>
+
       {editSession && (
         <CreateEditCabinForm cabinData={cabin} editSession={editSession} />
       )}

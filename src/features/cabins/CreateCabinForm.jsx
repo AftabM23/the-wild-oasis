@@ -15,12 +15,12 @@ function CreateEditCabinForm({ cabinData = {}, editSession = false }) {
   const { register, handleSubmit, reset, formState, getValues } = useForm({
     defaultValues: cabinData,
   });
-  const { isLoading, createCabin } = useCreateCabins();
+  const { creatingCabin, createCabin } = useCreateCabins();
   const { isUpdating, updateCabin } = useEditCabin();
   const { errors } = formState;
 
   const operationName = editSession ? "Done" : "Add Cabin";
-  const loading = isLoading || isUpdating;
+  const loading = creatingCabin || isUpdating;
   const handleOnSubmit = (data) => {
     const imageIs =
       typeof data.image === "string" ? data.image : data?.image[0];
@@ -113,7 +113,7 @@ function CreateEditCabinForm({ cabinData = {}, editSession = false }) {
         <Button variation="primary" disabled={loading}>
           {!loading
             ? operationName
-            : isLoading
+            : creatingCabin
             ? "Adding Cabin"
             : "Updating cabin"}
         </Button>
