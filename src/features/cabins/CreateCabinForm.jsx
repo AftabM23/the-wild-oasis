@@ -10,6 +10,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createEditCabin } from "../../services/apiCabin";
 import toast from "react-hot-toast";
 import FormRow from "../../ui/FormRow";
+import { isEqual } from "date-fns";
 
 function CreateEditCabinForm({ cabinData = {}, editSession = false }) {
   const { register, handleSubmit, reset, formState, getValues } = useForm({
@@ -40,7 +41,8 @@ function CreateEditCabinForm({ cabinData = {}, editSession = false }) {
       toast.error("Cabin Update failed");
     },
   });
-
+  const operationName = editSession ? "Done" : "Add Cabin";
+  const loading = isLoading || isUpdating;
   const handleOnSubmit = (data) => {
     const imageIs =
       typeof data.image === "string" ? data.image : data?.image[0];
@@ -58,6 +60,7 @@ function CreateEditCabinForm({ cabinData = {}, editSession = false }) {
         <Input
           type="text"
           id="name"
+          disabled={loading}
           {...register("name", { required: "name is required" })}
         />
       </FormRow>
@@ -69,16 +72,19 @@ function CreateEditCabinForm({ cabinData = {}, editSession = false }) {
         <Input
           type="number"
           id="maxCapacity"
+          disabled={loading}
           {...register("maxCapacity", { required: "Max Capacity is required" })}
         />
       </FormRow>
       <FormRow
         labelName="Regular price"
+        disabled={loading}
         errorMessage={errors?.regularPrice?.message}
       >
         <Input
           type="number"
           id="regularPrice"
+          disabled={loading}
           {...register("regularPrice", { required: "Regular price required" })}
         />
       </FormRow>
@@ -88,6 +94,7 @@ function CreateEditCabinForm({ cabinData = {}, editSession = false }) {
           type="number"
           id="discount"
           defaultValue={0}
+          disabled={loading}
           {...register("discount", {
             validate: (discount) =>
               discount < getValues().regularPrice ||
@@ -104,6 +111,7 @@ function CreateEditCabinForm({ cabinData = {}, editSession = false }) {
           type="number"
           id="description"
           defaultValue=""
+          disabled={loading}
           {...register("description")}
         />
       </FormRow>
@@ -118,8 +126,12 @@ function CreateEditCabinForm({ cabinData = {}, editSession = false }) {
           Cancel
         </Button>
 
-        <Button variation="primary" disabled={isLoading}>
-          {isLoading ? "Creating Cabin" : "Create Cabin"}
+        <Button variation="primary" disabled={loading}>
+          {!loading
+            ? operationName
+            : isLoading
+            ? "Adding Cabin"
+            : "Updating cabin"}
         </Button>
       </FormRow>
     </Form>
