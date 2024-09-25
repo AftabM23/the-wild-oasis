@@ -11,7 +11,11 @@ import FormRow from "../../ui/FormRow";
 import useCreateCabins from "./useCreateCabins";
 import useEditCabin from "./useEditCabin";
 
-function CreateEditCabinForm({ cabinData = {}, editSession = false }) {
+function CreateEditCabinForm({
+  cabinData = {},
+  editSession = false,
+  setShowModal,
+}) {
   const { register, handleSubmit, reset, formState, getValues } = useForm({
     defaultValues: cabinData,
   });
@@ -34,13 +38,17 @@ function CreateEditCabinForm({ cabinData = {}, editSession = false }) {
         {
           onSuccess: () => {
             reset();
+            setShowModal((show) => !show);
           },
         }
       );
     }
   };
   return (
-    <Form onSubmit={handleSubmit(handleOnSubmit)}>
+    <Form
+      onSubmit={handleSubmit(handleOnSubmit)}
+      type={setShowModal ? "modal" : "regular"}
+    >
       <FormRow labelName="Cabin Name" errorMessage={errors?.name?.message}>
         <Input
           type="text"
@@ -106,7 +114,11 @@ function CreateEditCabinForm({ cabinData = {}, editSession = false }) {
       </FormRow>
 
       <FormRow>
-        <Button variation="secondary" type="reset">
+        <Button
+          variation="secondary"
+          type="reset"
+          onClick={() => setShowModal((show) => !show)}
+        >
           Cancel
         </Button>
 
