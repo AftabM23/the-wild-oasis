@@ -14,7 +14,7 @@ import useEditCabin from "./useEditCabin";
 function CreateEditCabinForm({
   cabinData = {},
   editSession = false,
-  setShowModal,
+  onCloseModel,
 }) {
   const { register, handleSubmit, reset, formState, getValues } = useForm({
     defaultValues: cabinData,
@@ -38,7 +38,7 @@ function CreateEditCabinForm({
         {
           onSuccess: () => {
             reset();
-            setShowModal((show) => !show);
+            // setShowModal((show) => !show);
           },
         }
       );
@@ -47,7 +47,7 @@ function CreateEditCabinForm({
   return (
     <Form
       onSubmit={handleSubmit(handleOnSubmit)}
-      type={setShowModal ? "modal" : "regular"}
+      type={onCloseModel ? "modal" : "regular"}
     >
       <FormRow labelName="Cabin Name" errorMessage={errors?.name?.message}>
         <Input
@@ -117,7 +117,7 @@ function CreateEditCabinForm({
         <Button
           variation="secondary"
           type="reset"
-          onClick={() => setShowModal((show) => !show)}
+          onClick={() => onCloseModel()}
         >
           Cancel
         </Button>
