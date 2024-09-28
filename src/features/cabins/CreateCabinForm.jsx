@@ -11,11 +11,7 @@ import FormRow from "../../ui/FormRow";
 import useCreateCabins from "./useCreateCabins";
 import useEditCabin from "./useEditCabin";
 
-function CreateEditCabinForm({
-  cabinData = {},
-  editSession = false,
-  onCloseModel,
-}) {
+function CreateEditCabinForm({ cabinData = {}, onCloseModel }) {
   const { register, handleSubmit, reset, formState, getValues } = useForm({
     defaultValues: cabinData,
   });
@@ -23,12 +19,12 @@ function CreateEditCabinForm({
   const { isUpdating, updateCabin } = useEditCabin();
   const { errors } = formState;
 
-  const operationName = editSession ? "Done" : "Add Cabin";
+  const operationName = cabinData ? "Done" : "Add Cabin";
   const loading = creatingCabin || isUpdating;
   const handleOnSubmit = (data) => {
     const imageIs =
       typeof data.image === "string" ? data.image : data?.image[0];
-    if (editSession) {
+    if (cabinData) {
       updateCabin({ data: { ...data, image: imageIs }, id: data.id });
 
       console.log(data);
@@ -38,7 +34,7 @@ function CreateEditCabinForm({
         {
           onSuccess: () => {
             reset();
-            // setShowModal((show) => !show);
+            onCloseModel();
           },
         }
       );

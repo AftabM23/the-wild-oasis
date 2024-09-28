@@ -4,20 +4,25 @@
 // import Row from "../../ui/Row";
 import Modal from "../../ui/Modal";
 import CreateEditCabinForm from "./CreateCabinForm";
-
+import CabinTable from "./CabinTable";
 import Button from "../../ui/Button";
+import { HiPencil } from "react-icons/hi2";
 
 function AddCabin() {
   return (
-    <Modal>
-      <Modal.Open opens="cabin-form">
-        <Button>Add Cabin</Button>
-      </Modal.Open>
-      <Modal.WindowModal name="cabin-form">
-        <CreateEditCabinForm />
-      </Modal.WindowModal>
-    </Modal>
+    <>
+      <Modal>
+        <Modal.Open opens="cabin-form">
+          <Button variation="primary">Add Cabin</Button>
+        </Modal.Open>
+
+        <Modal.WindowModal name="cabin-form">
+          <CreateEditCabinForm />
+        </Modal.WindowModal>
+      </Modal>
+    </>
   );
+
   // return (
   //   <>
   //     <Row>

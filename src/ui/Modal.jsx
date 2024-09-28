@@ -1,9 +1,17 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { cloneElement, createContext, useContext, useState } from "react";
+import {
+  cloneElement,
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 import { HiXMark } from "react-icons/hi2";
 import styled from "styled-components";
+import useCloseModel from "../features/cabins/useCloseModel";
 
 const StyledModal = styled.div`
   position: fixed;
@@ -78,11 +86,13 @@ function Open({ children, opens: activeWindowName }) {
 
 function WindowModal({ children, name }) {
   const { closeWindow: onClose, activeWindow } = useContext(ModalContex);
-  if (activeWindow !== name) return null;
+  const ref = useCloseModel(onClose);
+
+  if (name) if (activeWindow !== name) return null;
 
   return createPortal(
     <Overlay>
-      <StyledModal>
+      <StyledModal ref={ref}>
         <Button onClick={onClose}>
           <HiXMark />
         </Button>

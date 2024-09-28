@@ -8,6 +8,7 @@ import useDeleteCabin from "./useDeleteCabin";
 import { HiPencil, HiTrash } from "react-icons/hi";
 import { HiSquare2Stack } from "react-icons/hi2";
 import useCreateCabins from "./useCreateCabins";
+import Modal from "../../ui/Modal";
 
 const TableRow = styled.div`
   display: grid;
@@ -50,7 +51,6 @@ const Discount = styled.div`
 `;
 
 function CabinRow({ cabin }) {
-  const [editSession, setEditSession] = useState(false);
   const { deleteCabin, isDleteting } = useDeleteCabin();
   const { creatingCabin, createCabin } = useCreateCabins();
 
@@ -75,9 +75,17 @@ function CabinRow({ cabin }) {
         <Price>{formatCurrency(regularPrice)}</Price>
         <Discount>{formatCurrency(discount)}</Discount>
         <TableRow>
-          <button onClick={() => setEditSession(!editSession)}>
-            <HiPencil />
-          </button>
+          <Modal>
+            <Modal.Open opens="edit-form">
+              <button>
+                <HiPencil />
+              </button>
+            </Modal.Open>
+            <Modal.WindowModal name="edit-form">
+              <CreateEditCabinForm cabinData={cabin} />
+            </Modal.WindowModal>
+          </Modal>
+
           <button onClick={() => deleteCabin(id)} disabled={isDleteting}>
             <HiTrash />
           </button>
@@ -86,10 +94,6 @@ function CabinRow({ cabin }) {
           </button>
         </TableRow>
       </TableRow>
-
-      {editSession && (
-        <CreateEditCabinForm cabinData={cabin} editSession={editSession} />
-      )}
     </>
   );
 }
