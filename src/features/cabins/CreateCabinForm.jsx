@@ -33,7 +33,7 @@ function CreateEditCabinForm({ cabinData = {}, onCloseModel }) {
         { ...data, image: imageIs },
         {
           onSuccess: () => {
-            reset();
+            // reset();
             onCloseModel();
           },
         }
